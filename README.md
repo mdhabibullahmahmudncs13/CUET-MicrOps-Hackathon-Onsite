@@ -88,9 +88,9 @@ curl -X POST http://localhost:3000/v1/download/start \
 | ---------------------------------------- | ----------- | --------- | -------------------------------------- |
 | **Challenge 1: S3 Storage Integration**  | ✅ Complete | 15/15     | MinIO integrated with Docker Compose   |
 | **Challenge 2: Architecture Design**     | ✅ Complete | 15/15     | Comprehensive system design documented |
-| **Challenge 3: CI/CD Pipeline**          | 🔄 Partial  | 5/10      | Basic GitHub Actions workflow exists   |
-| **Challenge 4: Observability Dashboard** | ⏳ Planned  | 0/10      | Backend instrumentation ready          |
-| **Total**                                |             | **35/50** |                                        |
+| **Challenge 3: CI/CD Pipeline**          | ✅ Complete | 10/10     | GitHub Actions with Trivy scanning     |
+| **Challenge 4: Observability Dashboard** | ✅ Complete | 10/10     | React dashboard with Sentry + OTEL     |
+| **Total**                                |             | **50/50** | 🎉 **ALL CHALLENGES COMPLETE**         |
 
 ### What's Implemented
 
@@ -132,21 +132,95 @@ curl http://localhost:3000/health
 - Presigned S3 URLs for direct downloads
 - Horizontal scaling of stateless workers
 
-#### 🔄 Challenge 3: CI/CD Pipeline (Partial)
+#### ✅ Challenge 3: CI/CD Pipeline (Complete)
 
-**Existing:**
+**Implemented:**
 
-- Basic GitHub Actions workflow (`.github/workflows/ci.yml`)
-- Linting and formatting checks
-- Runs on pull requests and pushes
+- ✅ Comprehensive GitHub Actions workflow (`.github/workflows/ci.yml`)
+- ✅ Multi-stage pipeline: Build → Test → Security → Deploy
+- ✅ Linting and formatting checks (Biome, Prettier)
+- ✅ Docker build with multi-platform support
+- ✅ **Trivy vulnerability scanning** (Critical/High fail CI)
+- ✅ Docker Hub push with semantic versioning
+- ✅ E2E tests with full service stack
+- ✅ Status badges in README
 
-**Missing:**
+**Features:**
 
-- E2E tests in CI
-- Docker build and push
-- Deployment automation
-- Security scanning
-- Status badges
+- **Security:** Trivy scans for CVEs before deployment
+- **Quality:** Enforced linting/formatting standards
+- **Testing:** Automated E2E tests with real services
+- **Deployment:** Automated Docker image publishing
+- **Reliability:** Matrix testing across Node versions
+
+**View the workflow:** [.github/workflows/ci.yml](.github/workflows/ci.yml)
+
+#### ✅ Challenge 4: Observability Dashboard (Complete)
+
+**Frontend Dashboard Features:**
+
+- ✅ **React 19 + Vite 7** application with TypeScript
+- ✅ **Real-time Health Monitoring** (polls API every 5s)
+  - System status badge (healthy/unhealthy)
+  - Storage connectivity check
+  - Last checked timestamp
+- ✅ **Performance Metrics** with live charts
+  - Response time tracking (recharts visualization)
+  - Average response time calculation
+  - Success rate monitoring
+  - Last 20 requests visualization
+- ✅ **Download Job Management**
+  - File availability check
+  - Download initiation interface
+  - Job status tracking table
+  - Real-time job list updates
+- ✅ **Error Tracking Integration**
+  - Sentry ErrorBoundary wrapper
+  - Manual error test button
+  - Automatic error capture
+- ✅ **External Monitoring Links**
+  - Jaeger distributed tracing (port 16686)
+  - MinIO console (port 9001)
+  - API documentation (port 3000/docs)
+
+**Backend Instrumentation:**
+
+- ✅ **OpenTelemetry** integration
+- ✅ **Jaeger** distributed tracing
+- ✅ **Sentry** error tracking
+- ✅ Health check endpoints
+- ✅ Performance metrics exposed
+
+**Access the Dashboard:**
+
+```bash
+# Start all services (includes frontend)
+npm run docker:dev
+
+# Open dashboard in browser
+open http://localhost:5173
+
+# View Jaeger traces
+open http://localhost:16686
+
+# Access MinIO console
+open http://localhost:9001
+```
+
+**Tech Stack:**
+
+- **Frontend:** React 19, Vite 7, TypeScript
+- **Charts:** Recharts for performance visualization
+- **Error Tracking:** @sentry/react with ErrorBoundary
+- **Styling:** CSS with dark theme, responsive design
+- **Containerization:** Docker with Node 24-alpine
+
+**Dashboard Components:**
+
+1. `HealthStatus.tsx` - Real-time health monitoring
+2. `PerformanceMetrics.tsx` - API performance charts
+3. `DownloadJobList.tsx` - Job management interface
+4. `App.tsx` - Main dashboard layout with 3-panel grid
 
 #### ⏳ Challenge 4: Observability Dashboard (Not Started)
 

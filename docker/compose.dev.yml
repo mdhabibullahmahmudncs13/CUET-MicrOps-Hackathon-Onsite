@@ -72,6 +72,23 @@ services:
     networks:
       - delineate-network
 
+  delineate-frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../frontend/src:/app/src
+      - ../frontend/public:/app/public
+    environment:
+      - VITE_API_URL=http://localhost:3000
+      - VITE_SENTRY_DSN=${VITE_SENTRY_DSN}
+    depends_on:
+      - delineate-app
+    networks:
+      - delineate-network
+
 networks:
   delineate-network:
     driver: bridge
