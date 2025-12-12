@@ -120,33 +120,37 @@ export default function DownloadJobList({ apiUrl }: DownloadJobListProps) {
     }
   }, [apiUrl, fileId]);
 
-  const testSentryError = async () => {
+  const testSentryError = useCallback(async () => {
     setLoading(true);
     setMessage("");
 
     try {
-      const response = await fetch(
-        `${apiUrl}/v1/download/check?sentry_test=true`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ file_id: parseInt(fileId) }),
-        },
+      // Simply throw an error to test Sentry integration
+      const testError = new Error(
+        "Test error from Delineate Dashboard - Sentry integration test",
       );
+      Sentry.captureException(testError, {
+        tags: {
+          test: true,
+          component: "DownloadJobList",
+        },
+        extra: {
+          timestamp: new Date().toISOString(),
+          fileId: fileId,
+        },
+      });
 
-      const data = await response.json();
       setMessage(
-        `🔥 Sentry test error triggered! Check your Sentry dashboard. Response: ${data.message}`,
+        `✅ Test error sent to Sentry! Check your Sentry dashboard for error: "${testError.message}"`,
       );
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Unknown error";
-      setMessage(`Test error sent: ${errorMessage}`);
+      setMessage(`❌ Failed to send test error: ${errorMessage}`);
+      Sentry.captureException(err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [fileId]);
 
   const formatBytes = (bytes: number): string => {
     if (bytes === 0) return "0 Bytes";
