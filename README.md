@@ -19,6 +19,7 @@
 - [Testing](#testing)
 - [Deployment](#deployment)
 - [Security](#security)
+- [Documentation](#documentation)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -76,7 +77,7 @@ curl -X POST http://localhost:3000/v1/download/start \
 # [Download] Starting file_id=70000 | delay=85.3s (range: 10s-120s)
 ```
 
-**The Solution:** See [ARCHITECTURE.md](ARCHITECTURE.md) for our complete hybrid polling + job queue design.
+**The Solution:** See [look.md](look.md) for a comprehensive problem-solution analysis, or [ARCHITECTURE.md](ARCHITECTURE.md) for the complete technical design.
 
 ---
 
@@ -714,13 +715,23 @@ Before deploying to production:
 
 ## 📖 Documentation
 
-| Document                                                       | Description                                    |
-| -------------------------------------------------------------- | ---------------------------------------------- |
-| [README.md](README.md)                                         | This file - project overview and quick start   |
-| [ARCHITECTURE.md](ARCHITECTURE.md)                             | Complete system architecture (15,000+ words)   |
-| [IMPLEMENTATION.md](IMPLEMENTATION.md)                         | Implementation details and status              |
-| [TODO.md](TODO.md)                                             | Detailed task breakdown and learning resources |
-| [Final Problem Statement.pdf](Final%20Problem%20Statement.pdf) | Original hackathon challenge                   |
+| Document                                                       | Description                                           |
+| -------------------------------------------------------------- | ----------------------------------------------------- |
+| [README.md](README.md)                                         | This file - project overview and quick start          |
+| [look.md](look.md)                                             | 🎯 **Problem-Solution Analysis** - How we solved it  |
+| [ARCHITECTURE.md](ARCHITECTURE.md)                             | Complete system architecture (1600+ lines)            |
+| [IMPLEMENTATION.md](IMPLEMENTATION.md)                         | Implementation details and development process        |
+| [DEPLOYMENT.md](DEPLOYMENT.md)                                 | Production deployment guide                           |
+| [QA.md](QA.md)                                                 | Testing strategy and quality assurance                |
+| [TODO.md](TODO.md)                                             | Detailed task breakdown and learning resources        |
+| [Final Problem Statement.pdf](Final%20Problem%20Statement.pdf) | Original hackathon challenge                          |
+
+### 📌 Start Here
+
+**New to the project?** Read in this order:
+1. [look.md](look.md) - Understand the problem and our solution approach
+2. [README.md](README.md) - Get started with installation and testing
+3. [ARCHITECTURE.md](ARCHITECTURE.md) - Deep dive into system design
 
 ---
 
