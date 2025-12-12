@@ -41,7 +41,7 @@ jobs:
         run: |
           # Install Docker if needed (node:24-slim doesn't have it)
           apt-get update && apt-get install -y docker.io curl
-          
+
           # Start MinIO in background
           docker run -d \
             --name test-minio \
@@ -49,7 +49,7 @@ jobs:
             -e MINIO_ROOT_USER=minioadmin \
             -e MINIO_ROOT_PASSWORD=minioadmin \
             minio/minio:latest server /data
-          
+
           # Wait for MinIO to be ready
           echo "Waiting for MinIO to be ready..."
           for i in $(seq 1 30); do
