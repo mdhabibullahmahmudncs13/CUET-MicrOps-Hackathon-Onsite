@@ -16,7 +16,7 @@ function App() {
   const externalLinks = useMemo(
     () => [
       {
-        url: "http://localhost:16686",
+        url: "http://36.255.71.37:16686",
         icon: "🔍",
         title: "Jaeger Tracing",
         subtitle: "Distributed Tracing",
@@ -28,7 +28,7 @@ function App() {
         subtitle: "OpenAPI Spec",
       },
       {
-        url: "http://localhost:9001",
+        url: "http://36.255.71.37:9001",
         icon: "🪣",
         title: "MinIO",
         subtitle: "S3 Storage",
