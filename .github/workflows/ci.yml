@@ -30,37 +30,30 @@ jobs:
     runs-on: ubuntu-24.04
     needs: lint
 
-    services:
-      minio:
-        image: minio/minio:latest
-        env:
-          MINIO_ROOT_USER: minioadmin
-          MINIO_ROOT_PASSWORD: minioadmin
-        ports:
-          - 9000:9000
-        options: >-
-          --health-cmd "curl -f http://localhost:9000/minio/health/live || exit 1"
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 10
-          --health-start-period 5s
-
     container:
       image: node:24-slim
-      options: --network-alias test-runner
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install curl for MinIO setup
-        run: apt-get update && apt-get install -y curl
-
-      - name: Wait for MinIO to be ready
+      - name: Start MinIO
         run: |
+          # Install Docker if needed (node:24-slim doesn't have it)
+          apt-get update && apt-get install -y docker.io curl
+          
+          # Start MinIO in background
+          docker run -d \
+            --name test-minio \
+            --network container:$HOSTNAME \
+            -e MINIO_ROOT_USER=minioadmin \
+            -e MINIO_ROOT_PASSWORD=minioadmin \
+            minio/minio:latest server /data
+          
+          # Wait for MinIO to be ready
           echo "Waiting for MinIO to be ready..."
           for i in $(seq 1 30); do
-            if curl -f http://minio:9000/minio/health/live > /dev/null 2>&1; then
+            if curl -f http://localhost:9000/minio/health/live > /dev/null 2>&1; then
               echo "MinIO is ready!"
               break
             fi
@@ -76,7 +69,7 @@ jobs:
 
       - name: Configure MinIO and create bucket
         run: |
-          mc alias set myminio http://minio:9000 minioadmin minioadmin
+          mc alias set myminio http://localhost:9000 minioadmin minioadmin
           mc mb myminio/downloads --ignore-existing || true
           mc anonymous set download myminio/downloads
           echo "MinIO bucket 'downloads' created and configured"
@@ -91,7 +84,7 @@ jobs:
           NODE_ENV: development
           PORT: 3000
           S3_REGION: us-east-1
-          S3_ENDPOINT: http://minio:9000
+          S3_ENDPOINT: http://localhost:9000
           S3_ACCESS_KEY_ID: minioadmin
           S3_SECRET_ACCESS_KEY: minioadmin
           S3_BUCKET_NAME: downloads
