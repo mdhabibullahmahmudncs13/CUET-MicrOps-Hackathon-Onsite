@@ -44,7 +44,6 @@
     0 4px 8px -2px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
   --shadow-lg:
     0 12px 20px -4px rgba(0, 0, 0, 0.6), 0 4px 8px -2px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 20px rgba(0, 255, 136, 0.3);
 
   /* Spacing */
   --spacing-xs: 0.5rem;
@@ -162,18 +161,19 @@ body {
   max-width: 1600px;
   width: 100%;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: var(--spacing-lg);
 }
 
 .dashboard-section {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .dashboard-section.full-width {
-  grid-column: 1 / -1;
+  width: 100%;
 }
 
 .card {
@@ -201,7 +201,7 @@ body {
 
 .card:hover {
   border-color: var(--primary-color);
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 
@@ -254,14 +254,12 @@ body {
   border: 2px solid var(--primary-dark);
   color: #1a1a1a;
   font-weight: 700;
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--shadow-md);
 }
 
 .status-badge.healthy::before {
   content: "●";
   font-size: 1.25rem;
-  animation: pulse 2s ease-in-out infinite;
-  filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.8));
 }
 
 .status-badge.unhealthy {
@@ -498,7 +496,7 @@ body {
 }
 
 .button-primary:hover:not(:disabled) {
-  box-shadow: var(--shadow-glow), var(--shadow-md);
+  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 
