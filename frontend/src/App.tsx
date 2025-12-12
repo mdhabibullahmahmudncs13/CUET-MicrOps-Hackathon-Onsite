@@ -8,30 +8,29 @@ function App() {
   const [apiUrl] = useState(
     import.meta.env.VITE_API_URL || "http://localhost:3000",
   );
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [activeTab, setActiveTab] = useState<"overview" | "downloads">(
-    "overview",
+  const [activeView, setActiveView] = useState<"dashboard" | "downloads">(
+    "dashboard",
   );
 
-  const externalLinks = useMemo(
+  const quickLinks = useMemo(
     () => [
       {
         url: "http://36.255.71.37:16686",
-        icon: "🔍",
-        title: "Jaeger Tracing",
-        subtitle: "Distributed Tracing",
+        icon: "📊",
+        label: "Jaeger",
+        color: "#00d4ff",
       },
       {
         url: `${apiUrl}/docs`,
-        icon: "📖",
-        title: "API Docs",
-        subtitle: "OpenAPI Spec",
+        icon: "📚",
+        label: "API Docs",
+        color: "#00ff88",
       },
       {
         url: "http://36.255.71.37:9001",
-        icon: "🪣",
-        title: "MinIO",
-        subtitle: "S3 Storage",
+        icon: "💾",
+        label: "MinIO",
+        color: "#ff6b9d",
       },
     ],
     [apiUrl],
@@ -39,133 +38,112 @@ function App() {
 
   return (
     <div className="app">
-      {/* Top Navigation Bar */}
-      <header className="navbar">
-        <div className="navbar-brand">
-          <span className="brand-icon">🔍</span>
-          <div className="brand-text">
-            <h1>Delineate</h1>
-            <span className="brand-subtitle">Observability Dashboard</span>
+      {/* Header */}
+      <header className="header">
+        <div className="header-brand">
+          <div className="brand-logo">
+            <svg viewBox="0 0 24 24" fill="none" className="logo-icon">
+              <path
+                d="M12 2L2 7L12 12L22 7L12 2Z"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M2 17L12 22L22 17"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M2 12L12 17L22 12"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span className="brand-name">Delineate</span>
           </div>
         </div>
 
-        <nav className="navbar-tabs">
+        <nav className="header-nav">
           <button
-            className={`nav-tab ${activeTab === "overview" ? "active" : ""}`}
-            onClick={() => setActiveTab("overview")}
+            className={`nav-button ${activeView === "dashboard" ? "active" : ""}`}
+            onClick={() => setActiveView("dashboard")}
           >
-            <span className="tab-icon">📊</span>
-            Overview
+            Dashboard
           </button>
           <button
-            className={`nav-tab ${activeTab === "downloads" ? "active" : ""}`}
-            onClick={() => setActiveTab("downloads")}
+            className={`nav-button ${activeView === "downloads" ? "active" : ""}`}
+            onClick={() => setActiveView("downloads")}
           >
-            <span className="tab-icon">📥</span>
             Downloads
           </button>
         </nav>
 
-        <div className="navbar-actions">
-          <a
-            href={`${apiUrl}/health`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="navbar-link"
-            title="API Health"
-          >
-            <span className="link-icon">💚</span>
-          </a>
+        <div className="header-actions">
+          {quickLinks.map((link) => (
+            <a
+              key={link.url}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="quick-link"
+              title={link.label}
+              style={{ "--link-color": link.color } as React.CSSProperties}
+            >
+              <span>{link.icon}</span>
+            </a>
+          ))}
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <div className="main-container">
-        {/* Sidebar */}
-        <aside className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
-          <button
-            className="sidebar-toggle"
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {sidebarCollapsed ? "→" : "←"}
-          </button>
+      {/* Main Content */}
+      <main className="main">
+        {activeView === "dashboard" && (
+          <div className="dashboard-view">
+            <div className="view-header">
+              <h1 className="view-title">Dashboard Overview</h1>
+              <p className="view-subtitle">
+                Real-time system health and performance metrics
+              </p>
+            </div>
 
-          {!sidebarCollapsed && (
-            <>
-              <div className="sidebar-section">
-                <h3 className="sidebar-title">Quick Links</h3>
-                <div className="sidebar-links">
-                  {externalLinks.map((link) => (
-                    <a
-                      key={link.url}
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="sidebar-link"
-                    >
-                      <span className="sidebar-link-icon">{link.icon}</span>
-                      <div className="sidebar-link-content">
-                        <strong>{link.title}</strong>
-                        <small>{link.subtitle}</small>
-                      </div>
-                    </a>
-                  ))}
-                </div>
+            <div className="cards-grid">
+              <div className="card-wrapper">
+                <HealthStatus apiUrl={apiUrl} />
               </div>
-
-              <div className="sidebar-section">
-                <h3 className="sidebar-title">System Status</h3>
-                <div className="sidebar-status">
-                  <div className="status-item">
-                    <span className="status-dot running"></span>
-                    <span>API Server</span>
-                  </div>
-                  <div className="status-item">
-                    <span className="status-dot running"></span>
-                    <span>MinIO Storage</span>
-                  </div>
-                  <div className="status-item">
-                    <span className="status-dot running"></span>
-                    <span>Jaeger Tracing</span>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-        </aside>
-
-        {/* Main Content */}
-        <main className="content-area">
-          {activeTab === "overview" && (
-            <div className="overview-layout">
-              <div className="metrics-grid">
-                <div className="metric-card">
-                  <HealthStatus apiUrl={apiUrl} />
-                </div>
-                <div className="metric-card">
-                  <PerformanceMetrics apiUrl={apiUrl} />
-                </div>
+              <div className="card-wrapper">
+                <PerformanceMetrics apiUrl={apiUrl} />
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {activeTab === "downloads" && (
-            <div className="downloads-layout">
+        {activeView === "downloads" && (
+          <div className="downloads-view">
+            <div className="view-header">
+              <h1 className="view-title">Download Operations</h1>
+              <p className="view-subtitle">
+                Manage and monitor file download jobs
+              </p>
+            </div>
+
+            <div className="card-wrapper">
               <DownloadJobList apiUrl={apiUrl} />
             </div>
-          )}
-        </main>
-      </div>
+          </div>
+        )}
+      </main>
 
       {/* Footer */}
-      <footer className="app-footer">
+      <footer className="footer">
         <div className="footer-content">
-          <span>NITER_Config_Crew</span>
-          <span className="footer-divider">•</span>
-          <span>CUET MicrOps Hackathon 2025</span>
-          <span className="footer-divider">•</span>
-          <span className="footer-version">v1.0.0</span>
+          <span className="footer-team">NITER_Config_Crew</span>
+          <span className="footer-event">CUET MicrOps Hackathon 2025</span>
         </div>
       </footer>
     </div>
