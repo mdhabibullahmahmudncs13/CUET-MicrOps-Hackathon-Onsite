@@ -1,0 +1,89 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch: # Allow manual deployment
+
+jobs:
+  deploy:
+    name: Deploy to Brilliant Cloud
+    runs-on: ubuntu-24.04
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.VM_IP }} >> ~/.ssh/known_hosts
+
+      - name: Test SSH Connection
+        run: |
+          ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 ${{ secrets.SSH_USER }}@${{ secrets.VM_IP }} "echo 'SSH connection successful'"
+
+      - name: Deploy Application
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.VM_IP }} << 'ENDSSH'
+            set -e
+            
+            echo "📥 Pulling latest changes..."
+            cd CUET-MicrOps-Hackathon-Onsite
+            git pull origin main
+            
+            echo "🐳 Rebuilding Docker containers..."
+            docker-compose -f docker/compose.prod.yml build --no-cache
+            
+            echo "🚀 Restarting services..."
+            docker-compose -f docker/compose.prod.yml up -d --force-recreate
+            
+            echo "⏳ Waiting for services to be ready..."
+            sleep 15
+            
+            echo "✅ Checking container health..."
+            docker-compose -f docker/compose.prod.yml ps
+            
+            echo "🧹 Cleaning up old images..."
+            docker image prune -f
+            
+            echo "✅ Deployment complete!"
+          ENDSSH
+
+      - name: Verify Deployment
+        run: |
+          echo "🔍 Verifying services are accessible..."
+          
+          # Check API health
+          if curl -f --retry 3 --retry-delay 5 http://${{ secrets.VM_IP }}:3000/health; then
+            echo "✅ API is healthy"
+          else
+            echo "❌ API health check failed"
+            exit 1
+          fi
+          
+          # Check Frontend
+          if curl -f --retry 3 --retry-delay 5 http://${{ secrets.VM_IP }}:5173; then
+            echo "✅ Frontend is accessible"
+          else
+            echo "⚠️  Frontend may not be accessible (check firewall)"
+          fi
+
+      - name: Notify Deployment Status
+        if: always()
+        run: |
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "🎉 Deployment successful!"
+            echo "🌐 Dashboard: http://${{ secrets.VM_IP }}:5173"
+            echo "🔌 API: http://${{ secrets.VM_IP }}:3000"
+            echo "🗄️ MinIO: http://${{ secrets.VM_IP }}:9001"
+          else
+            echo "❌ Deployment failed!"
+          fi
+
+      - name: Cleanup SSH keys
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
