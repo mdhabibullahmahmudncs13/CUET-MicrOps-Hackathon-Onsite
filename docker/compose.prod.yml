@@ -59,6 +59,20 @@ services:
     networks:
       - delineate-network
 
+  delineate-frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://${VM_IP:-localhost}:3000
+    depends_on:
+      - delineate-app
+    restart: unless-stopped
+    networks:
+      - delineate-network
+
 networks:
   delineate-network:
     driver: bridge
