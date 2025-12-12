@@ -22,12 +22,12 @@ export default function HealthStatus({ apiUrl }: HealthStatusProps) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
-      
+
       const response = await fetch(`${apiUrl}/health`, {
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
@@ -36,8 +36,8 @@ export default function HealthStatus({ apiUrl }: HealthStatusProps) {
       setError(null);
       setLastChecked(new Date());
     } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
-        setError('Request timeout');
+      if (err instanceof Error && err.name === "AbortError") {
+        setError("Request timeout");
       } else {
         const message = err instanceof Error ? err.message : "Unknown error";
         setError(message);
