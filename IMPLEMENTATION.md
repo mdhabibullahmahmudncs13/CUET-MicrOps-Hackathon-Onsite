@@ -42,19 +42,20 @@ Successfully integrated MinIO, a self-hosted S3-compatible storage service, into
 
 ```yaml
 Services Added:
-- delineate-minio: S3-compatible storage server
-- delineate-minio-init: Automated bucket creation
-- delineate-network: Isolated network for services
+  - delineate-minio: S3-compatible storage server
+  - delineate-minio-init: Automated bucket creation
+  - delineate-network: Isolated network for services
 
 Bucket Configuration:
-- Name: "downloads"
-- Access: Anonymous download (public read)
-- Created automatically on startup
+  - Name: "downloads"
+  - Access: Anonymous download (public read)
+  - Created automatically on startup
 ```
 
 #### Verification:
 
 The implementation satisfies all requirements:
+
 - ✅ Self-hosted S3 service running in Docker
 - ✅ Automatic bucket creation (`downloads`)
 - ✅ Proper service networking
@@ -163,13 +164,13 @@ Created comprehensive architecture document (`ARCHITECTURE.md`) addressing long-
 
 #### Key Architectural Decisions:
 
-| Decision | Rationale |
-|----------|-----------|
-| BullMQ Queue | Redis-based, TypeScript support, automatic retries |
-| Polling over WebSocket | Universal compatibility, simpler implementation |
-| Presigned S3 URLs | Direct download, reduces API load |
-| Redis for status | Fast reads (<1ms), built-in TTL |
-| Horizontal scaling | Stateless design, easy to scale |
+| Decision               | Rationale                                          |
+| ---------------------- | -------------------------------------------------- |
+| BullMQ Queue           | Redis-based, TypeScript support, automatic retries |
+| Polling over WebSocket | Universal compatibility, simpler implementation    |
+| Presigned S3 URLs      | Direct download, reduces API load                  |
+| Redis for status       | Fast reads (<1ms), built-in TTL                    |
+| Horizontal scaling     | Stateless design, easy to scale                    |
 
 ---
 
@@ -178,12 +179,14 @@ Created comprehensive architecture document (`ARCHITECTURE.md`) addressing long-
 **Status**: Baseline exists, enhancements planned
 
 **Current State**:
+
 - `.github/workflows/ci.yml` exists with basic linting and formatting checks
 - No E2E tests in CI
 - No Docker build stage
 - No deployment automation
 
 **Planned Enhancements** (Not implemented yet):
+
 - Add MinIO service to GitHub Actions
 - Run E2E tests in CI
 - Add Docker build and security scanning
@@ -200,12 +203,14 @@ Created comprehensive architecture document (`ARCHITECTURE.md`) addressing long-
 **Status**: Backend instrumentation ready, frontend not created
 
 **Current State**:
+
 - Sentry integration exists in backend
 - OpenTelemetry tracing configured
 - Jaeger UI accessible in dev mode
 - Test endpoint for Sentry (`?sentry_test=true`)
 
 **Not Implemented**:
+
 - React frontend dashboard
 - Sentry React SDK integration
 - Frontend-backend trace correlation
@@ -219,13 +224,13 @@ Created comprehensive architecture document (`ARCHITECTURE.md`) addressing long-
 
 ### File Changes Summary
 
-| File | Status | Purpose |
-|------|--------|---------|
-| `docker/compose.dev.yml` | ✅ Modified | Added MinIO + init container |
-| `docker/compose.prod.yml` | ✅ Modified | Production MinIO setup |
-| `ARCHITECTURE.md` | ✅ Created | Complete system architecture |
-| `IMPLEMENTATION.md` | ✅ Created | This document |
-| `TODO.md` | ✅ Enhanced | Detailed task breakdown |
+| File                      | Status      | Purpose                      |
+| ------------------------- | ----------- | ---------------------------- |
+| `docker/compose.dev.yml`  | ✅ Modified | Added MinIO + init container |
+| `docker/compose.prod.yml` | ✅ Modified | Production MinIO setup       |
+| `ARCHITECTURE.md`         | ✅ Created  | Complete system architecture |
+| `IMPLEMENTATION.md`       | ✅ Created  | This document                |
+| `TODO.md`                 | ✅ Enhanced | Detailed task breakdown      |
 
 ### Infrastructure Components
 
@@ -400,12 +405,14 @@ docker compose -f docker/compose.prod.yml logs -f
 ### Cloud Deployment (Future)
 
 The architecture is ready for deployment to:
+
 - **Railway**: Docker Compose support, MinIO add-on
 - **Fly.io**: Multi-container apps, persistent volumes
 - **AWS**: ECS + RDS + S3
 - **DigitalOcean**: App Platform + Spaces
 
 **Prerequisites**:
+
 - Implement Challenge 2 architecture (queue system)
 - Set up external Redis instance
 - Configure persistent S3 storage
@@ -442,27 +449,27 @@ The architecture is ready for deployment to:
 
 ### Current Performance:
 
-| Metric | Value |
-|--------|-------|
-| API response time (health) | ~5ms |
-| API response time (download check) | ~30ms |
-| MinIO health check | ~10ms |
-| S3 HEAD operation | ~15ms |
-| Container startup time | ~10 seconds |
+| Metric                             | Value       |
+| ---------------------------------- | ----------- |
+| API response time (health)         | ~5ms        |
+| API response time (download check) | ~30ms       |
+| MinIO health check                 | ~10ms       |
+| S3 HEAD operation                  | ~15ms       |
+| Container startup time             | ~10 seconds |
 
 ### Simulated Download Times:
 
-| Environment | Delay Range |
-|------------|-------------|
-| Development (`npm run dev`) | 5-15 seconds |
+| Environment                  | Delay Range    |
+| ---------------------------- | -------------- |
+| Development (`npm run dev`)  | 5-15 seconds   |
 | Production (`npm run start`) | 10-120 seconds |
-| Docker Dev | 5-15 seconds |
-| Docker Prod | 10-120 seconds |
+| Docker Dev                   | 5-15 seconds   |
+| Docker Prod                  | 10-120 seconds |
 
 ### Resource Usage (Docker):
 
 ```
-Service         CPU        Memory      
+Service         CPU        Memory
 ----------------------------------------
 API Server      10-20%     150-200 MB
 MinIO           5-15%      100-150 MB
@@ -478,7 +485,7 @@ Total           ~25%       ~500 MB
 
 ### Current Limitations:
 
-1. **No Real Job Queue**: 
+1. **No Real Job Queue**:
    - Current implementation simulates long delays but doesn't use actual queue system
    - Solution: Implement BullMQ as described in ARCHITECTURE.md
 
@@ -645,6 +652,7 @@ Total           ~25%       ~500 MB
 ### Troubleshooting:
 
 **Services won't start:**
+
 ```bash
 # Check Docker is running
 docker info
@@ -658,6 +666,7 @@ docker compose -f docker/compose.dev.yml up --build
 ```
 
 **Health check fails:**
+
 ```bash
 # Check MinIO is accessible
 curl http://localhost:9000/minio/health/live
@@ -667,6 +676,7 @@ docker compose -f docker/compose.dev.yml exec delineate-app curl http://delineat
 ```
 
 **MinIO bucket not created:**
+
 ```bash
 # Check init container logs
 docker compose -f docker/compose.dev.yml logs delineate-minio-init
@@ -707,6 +717,7 @@ docker compose -f docker/compose.dev.yml up --build --force-recreate
 ## ✅ Deployment Readiness Checklist
 
 ### Core Functionality:
+
 - ✅ API server starts successfully
 - ✅ MinIO storage integrated
 - ✅ Health checks pass
@@ -717,6 +728,7 @@ docker compose -f docker/compose.dev.yml up --build --force-recreate
 - ✅ Logging configured
 
 ### Documentation:
+
 - ✅ Architecture documented
 - ✅ Implementation guide created
 - ✅ API documentation available
@@ -724,6 +736,7 @@ docker compose -f docker/compose.dev.yml up --build --force-recreate
 - ✅ Troubleshooting guide included
 
 ### Production Readiness:
+
 - ⚠️ Queue system (planned, not implemented)
 - ⚠️ Database for job persistence (planned)
 - ⚠️ User authentication (planned)

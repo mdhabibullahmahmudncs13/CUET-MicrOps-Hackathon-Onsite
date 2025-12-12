@@ -84,13 +84,13 @@ curl -X POST http://localhost:3000/v1/download/start \
 
 ### Hackathon Challenges Progress
 
-| Challenge | Status | Points | Description |
-|-----------|--------|--------|-------------|
-| **Challenge 1: S3 Storage Integration** | ✅ Complete | 15/15 | MinIO integrated with Docker Compose |
-| **Challenge 2: Architecture Design** | ✅ Complete | 15/15 | Comprehensive system design documented |
-| **Challenge 3: CI/CD Pipeline** | 🔄 Partial | 5/10 | Basic GitHub Actions workflow exists |
-| **Challenge 4: Observability Dashboard** | ⏳ Planned | 0/10 | Backend instrumentation ready |
-| **Total** | | **35/50** | |
+| Challenge                                | Status      | Points    | Description                            |
+| ---------------------------------------- | ----------- | --------- | -------------------------------------- |
+| **Challenge 1: S3 Storage Integration**  | ✅ Complete | 15/15     | MinIO integrated with Docker Compose   |
+| **Challenge 2: Architecture Design**     | ✅ Complete | 15/15     | Comprehensive system design documented |
+| **Challenge 3: CI/CD Pipeline**          | 🔄 Partial  | 5/10      | Basic GitHub Actions workflow exists   |
+| **Challenge 4: Observability Dashboard** | ⏳ Planned  | 0/10      | Backend instrumentation ready          |
+| **Total**                                |             | **35/50** |                                        |
 
 ### What's Implemented
 
@@ -104,6 +104,7 @@ curl -X POST http://localhost:3000/v1/download/start \
 - **Both dev and prod** Docker Compose configurations
 
 **Test it:**
+
 ```bash
 curl http://localhost:3000/health
 # Response: {"status":"healthy","checks":{"storage":"ok"}}
@@ -124,6 +125,7 @@ curl http://localhost:3000/health
 - **Security & reliability** strategies
 
 **Key Design Decisions:**
+
 - BullMQ + Redis for job queue (reliable, TypeScript support)
 - Polling API for universal compatibility
 - Optional WebSocket for real-time updates
@@ -133,11 +135,13 @@ curl http://localhost:3000/health
 #### 🔄 Challenge 3: CI/CD Pipeline (Partial)
 
 **Existing:**
+
 - Basic GitHub Actions workflow (`.github/workflows/ci.yml`)
 - Linting and formatting checks
 - Runs on pull requests and pushes
 
 **Missing:**
+
 - E2E tests in CI
 - Docker build and push
 - Deployment automation
@@ -147,12 +151,14 @@ curl http://localhost:3000/health
 #### ⏳ Challenge 4: Observability Dashboard (Not Started)
 
 **Ready:**
+
 - Sentry integration in backend
 - OpenTelemetry + Jaeger tracing
 - Test endpoint for Sentry errors
 - Docker includes Jaeger UI
 
 **Needed:**
+
 - React frontend application
 - Sentry React SDK integration
 - Dashboard components (health, jobs, errors, traces)
@@ -164,12 +170,12 @@ curl http://localhost:3000/health
 
 ### Prerequisites
 
-| Requirement | Version | Check Command |
-|-------------|---------|---------------|
-| Docker | >= 24.x | `docker --version` |
-| Docker Compose | >= 2.x | `docker compose version` |
-| Node.js | >= 24.10.0 | `node --version` |
-| npm | >= 10.x | `npm --version` |
+| Requirement    | Version    | Check Command            |
+| -------------- | ---------- | ------------------------ |
+| Docker         | >= 24.x    | `docker --version`       |
+| Docker Compose | >= 2.x     | `docker compose version` |
+| Node.js        | >= 24.10.0 | `node --version`         |
+| npm            | >= 10.x    | `npm --version`          |
 
 > **Note:** If you have Node.js < 24, use Docker (it has the correct version).
 
@@ -191,6 +197,7 @@ npm run docker:prod
 ```
 
 **Services available at:**
+
 - 🌐 API Server: http://localhost:3000
 - 📖 API Documentation: http://localhost:3000/docs
 - 📦 OpenAPI Spec: http://localhost:3000/openapi
@@ -309,15 +316,15 @@ Services:
 
 ### Endpoints
 
-| Method | Endpoint | Description | Response Time |
-|--------|----------|-------------|---------------|
-| GET | `/` | Welcome message | ~5ms |
-| GET | `/health` | Health check with storage status | ~30ms |
-| GET | `/openapi` | OpenAPI specification (JSON) | ~10ms |
-| GET | `/docs` | Interactive API documentation (Scalar) | ~20ms |
-| POST | `/v1/download/initiate` | Initiate bulk download job | ~50ms |
-| POST | `/v1/download/check` | Check single file availability | ~80ms |
-| POST | `/v1/download/start` | Start download (simulated delay) | **10-120s** |
+| Method | Endpoint                | Description                            | Response Time |
+| ------ | ----------------------- | -------------------------------------- | ------------- |
+| GET    | `/`                     | Welcome message                        | ~5ms          |
+| GET    | `/health`               | Health check with storage status       | ~30ms         |
+| GET    | `/openapi`              | OpenAPI specification (JSON)           | ~10ms         |
+| GET    | `/docs`                 | Interactive API documentation (Scalar) | ~20ms         |
+| POST   | `/v1/download/initiate` | Initiate bulk download job             | ~50ms         |
+| POST   | `/v1/download/check`    | Check single file availability         | ~80ms         |
+| POST   | `/v1/download/start`    | Start download (simulated delay)       | **10-120s**   |
 
 ### Example Requests
 
@@ -397,6 +404,7 @@ curl -X POST "http://localhost:3000/v1/download/check?sentry_test=true" \
 ### Interactive Documentation
 
 Visit http://localhost:3000/docs for interactive API documentation with:
+
 - Request/response examples
 - Schema validation
 - Try-it-now functionality
@@ -408,41 +416,41 @@ Visit http://localhost:3000/docs for interactive API documentation with:
 
 ### Backend
 
-| Technology | Purpose | Version |
-|------------|---------|---------|
-| **Node.js** | Runtime | 24.10.0+ |
-| **TypeScript** | Language | 5.8.3 |
-| **Hono** | Web framework | 4.10.8 |
-| **Zod** | Schema validation | 4.1.13 |
-| **AWS S3 SDK** | Storage client | 3.948.0 |
+| Technology     | Purpose           | Version  |
+| -------------- | ----------------- | -------- |
+| **Node.js**    | Runtime           | 24.10.0+ |
+| **TypeScript** | Language          | 5.8.3    |
+| **Hono**       | Web framework     | 4.10.8   |
+| **Zod**        | Schema validation | 4.1.13   |
+| **AWS S3 SDK** | Storage client    | 3.948.0  |
 
 ### Infrastructure
 
-| Technology | Purpose | Version |
-|------------|---------|---------|
-| **Docker** | Containerization | 24.x+ |
-| **Docker Compose** | Orchestration | 2.x+ |
-| **MinIO** | S3-compatible storage | latest |
-| **Redis** | Job queue (planned) | 7.x |
-| **PostgreSQL** | Job persistence (planned) | 16.x |
+| Technology         | Purpose                   | Version |
+| ------------------ | ------------------------- | ------- |
+| **Docker**         | Containerization          | 24.x+   |
+| **Docker Compose** | Orchestration             | 2.x+    |
+| **MinIO**          | S3-compatible storage     | latest  |
+| **Redis**          | Job queue (planned)       | 7.x     |
+| **PostgreSQL**     | Job persistence (planned) | 16.x    |
 
 ### Observability
 
-| Technology | Purpose |
-|------------|---------|
+| Technology        | Purpose                             |
+| ----------------- | ----------------------------------- |
 | **OpenTelemetry** | Distributed tracing instrumentation |
-| **Jaeger** | Trace visualization and analysis |
-| **Sentry** | Error tracking and monitoring |
-| **Prometheus** | Metrics collection (planned) |
+| **Jaeger**        | Trace visualization and analysis    |
+| **Sentry**        | Error tracking and monitoring       |
+| **Prometheus**    | Metrics collection (planned)        |
 
 ### Development Tools
 
-| Tool | Purpose |
-|------|---------|
-| **ESLint** | Code linting |
-| **Prettier** | Code formatting |
-| **Scalar** | OpenAPI documentation UI |
-| **Hot Reload** | Development workflow |
+| Tool           | Purpose                  |
+| -------------- | ------------------------ |
+| **ESLint**     | Code linting             |
+| **Prettier**   | Code formatting          |
+| **Scalar**     | OpenAPI documentation UI |
+| **Hot Reload** | Development workflow     |
 
 ---
 
@@ -470,6 +478,7 @@ npm run format
 ### Test Coverage
 
 The E2E test suite verifies:
+
 - ✅ API server starts successfully
 - ✅ Health endpoint returns healthy status
 - ✅ Storage connectivity works
@@ -608,7 +617,7 @@ The architecture supports deployment to:
 ✅ **Input Validation** - Zod schemas for all endpoints  
 ✅ **Path Traversal Prevention** - S3 key sanitization  
 ✅ **Graceful Shutdown** - Proper cleanup on SIGTERM  
-✅ **Error Handling** - Safe error messages, no stack traces in prod  
+✅ **Error Handling** - Safe error messages, no stack traces in prod
 
 ### Production Recommendations
 
@@ -631,13 +640,13 @@ Before deploying to production:
 
 ## 📖 Documentation
 
-| Document | Description |
-|----------|-------------|
-| [README.md](README.md) | This file - project overview and quick start |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Complete system architecture (15,000+ words) |
-| [IMPLEMENTATION.md](IMPLEMENTATION.md) | Implementation details and status |
-| [TODO.md](TODO.md) | Detailed task breakdown and learning resources |
-| [Final Problem Statement.pdf](Final%20Problem%20Statement.pdf) | Original hackathon challenge |
+| Document                                                       | Description                                    |
+| -------------------------------------------------------------- | ---------------------------------------------- |
+| [README.md](README.md)                                         | This file - project overview and quick start   |
+| [ARCHITECTURE.md](ARCHITECTURE.md)                             | Complete system architecture (15,000+ words)   |
+| [IMPLEMENTATION.md](IMPLEMENTATION.md)                         | Implementation details and status              |
+| [TODO.md](TODO.md)                                             | Detailed task breakdown and learning resources |
+| [Final Problem Statement.pdf](Final%20Problem%20Statement.pdf) | Original hackathon challenge                   |
 
 ---
 
@@ -690,17 +699,17 @@ npm run format
 
 ## 📝 Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start dev server (5-15s delays, hot reload) |
-| `npm run start` | Start production server (10-120s delays) |
-| `npm run lint` | Run ESLint |
-| `npm run lint:fix` | Fix linting issues automatically |
-| `npm run format` | Format code with Prettier |
-| `npm run format:check` | Check code formatting |
-| `npm run test:e2e` | Run E2E tests |
-| `npm run docker:dev` | Start with Docker (development) |
-| `npm run docker:prod` | Start with Docker (production) |
+| Script                 | Description                                 |
+| ---------------------- | ------------------------------------------- |
+| `npm run dev`          | Start dev server (5-15s delays, hot reload) |
+| `npm run start`        | Start production server (10-120s delays)    |
+| `npm run lint`         | Run ESLint                                  |
+| `npm run lint:fix`     | Fix linting issues automatically            |
+| `npm run format`       | Format code with Prettier                   |
+| `npm run format:check` | Check code formatting                       |
+| `npm run test:e2e`     | Run E2E tests                               |
+| `npm run docker:dev`   | Start with Docker (development)             |
+| `npm run docker:prod`  | Start with Docker (production)              |
 
 ---
 
