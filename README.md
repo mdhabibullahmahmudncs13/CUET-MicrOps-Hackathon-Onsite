@@ -14,7 +14,7 @@
 - [Implementation Status](#implementation-status)
 - [Quick Start](#quick-start)
 - [Architecture](#architecture)
-- [API Documentation](#api-documentation)
+- [API Documentation](#api-documentation )
 - [Tech Stack](#tech-stack)
 - [Testing](#testing)
 - [Deployment](#deployment)
