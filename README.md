@@ -290,13 +290,13 @@ npm run docker:prod
 
 ### 🔑 Login Credentials
 
-| Service        | URL                              | Username     | Password     |
-| -------------- | -------------------------------- | ------------ | ------------ |
-| MinIO Console  | http://localhost:9001            | `minioadmin` | `minioadmin` |
-| MinIO Console  | http://36.255.71.37:9001         | `minioadmin` | `minioadmin` |
-| API            | http://localhost:3000            | No auth      | -            |
-| Frontend       | http://localhost:5173            | No auth      | -            |
-| Jaeger UI      | http://localhost:16686           | No auth      | -            |
+| Service       | URL                      | Username     | Password     |
+| ------------- | ------------------------ | ------------ | ------------ |
+| MinIO Console | http://localhost:9001    | `minioadmin` | `minioadmin` |
+| MinIO Console | http://36.255.71.37:9001 | `minioadmin` | `minioadmin` |
+| API           | http://localhost:3000    | No auth      | -            |
+| Frontend      | http://localhost:5173    | No auth      | -            |
+| Jaeger UI     | http://localhost:16686   | No auth      | -            |
 
 > ⚠️ **Security Note:** Change default MinIO credentials in production! Set `S3_ACCESS_KEY_ID` and `S3_SECRET_ACCESS_KEY` environment variables.
 
@@ -736,10 +736,10 @@ Before deploying to production:
 
 ## 📖 Documentation
 
-| Document                                                       | Description                                         |
-| -------------------------------------------------------------- | --------------------------------------------------- |
-| [README.md](README.md)                                         | This file - project overview and quick start        |
-| [ARCHITECTURE.md](ARCHITECTURE.md)                             | Complete system architecture (1600+ lines)          |
+| Document                           | Description                                  |
+| ---------------------------------- | -------------------------------------------- |
+| [README.md](README.md)             | This file - project overview and quick start |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Complete system architecture (1600+ lines)   |
 
 ### 📌 Start Here
 
