@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import * as Sentry from "@sentry/react";
 
 interface HealthStatusProps {
@@ -18,9 +18,16 @@ export default function HealthStatus({ apiUrl }: HealthStatusProps) {
   const [error, setError] = useState<string | null>(null);
   const [lastChecked, setLastChecked] = useState<Date>(new Date());
 
-  const fetchHealth = async () => {
+  const fetchHealth = useCallback(async () => {
     try {
-      const response = await fetch(`${apiUrl}/health`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      const response = await fetch(`${apiUrl}/health`, {
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
@@ -29,22 +36,28 @@ export default function HealthStatus({ apiUrl }: HealthStatusProps) {
       setError(null);
       setLastChecked(new Date());
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      setError(message);
+      if (err instanceof Error && err.name === 'AbortError') {
+        setError('Request timeout');
+      } else {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        setError(message);
+      }
       Sentry.captureException(err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiUrl]);
 
   useEffect(() => {
     fetchHealth();
-    const interval = setInterval(fetchHealth, 5000); // Poll every 5 seconds
+    const interval = setInterval(fetchHealth, 10000); // Poll every 10 seconds (reduced frequency)
     return () => clearInterval(interval);
-  }, [apiUrl]);
+  }, [fetchHealth]);
 
-  const isHealthy =
-    health?.status === "healthy" && health?.checks?.storage === "ok";
+  const isHealthy = useMemo(
+    () => health?.status === "healthy" && health?.checks?.storage === "ok",
+    [health],
+  );
 
   return (
     <div className="card health-status">

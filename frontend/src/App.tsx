@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import "./App.css";
 import HealthStatus from "./components/HealthStatus";
 import DownloadJobList from "./components/DownloadJobList";
@@ -7,6 +7,30 @@ import PerformanceMetrics from "./components/PerformanceMetrics";
 function App() {
   const [apiUrl] = useState(
     import.meta.env.VITE_API_URL || "http://localhost:3000",
+  );
+
+  const externalLinks = useMemo(
+    () => [
+      {
+        url: "http://localhost:16686",
+        icon: "🔍",
+        title: "Jaeger UI",
+        subtitle: "Distributed Tracing",
+      },
+      {
+        url: `${apiUrl}/docs`,
+        icon: "📖",
+        title: "API Documentation",
+        subtitle: "OpenAPI Spec",
+      },
+      {
+        url: "http://localhost:9001",
+        icon: "🪣",
+        title: "MinIO Console",
+        subtitle: "S3 Storage",
+      },
+    ],
+    [apiUrl],
   );
 
   return (
@@ -33,42 +57,21 @@ function App() {
           <div className="info-panel">
             <h2>📊 Additional Monitoring</h2>
             <div className="links-grid">
-              <a
-                href="http://localhost:16686"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="monitor-link"
-              >
-                <span className="icon">🔍</span>
-                <div>
-                  <strong>Jaeger UI</strong>
-                  <small>Distributed Tracing</small>
-                </div>
-              </a>
-              <a
-                href={`${apiUrl}/docs`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="monitor-link"
-              >
-                <span className="icon">📖</span>
-                <div>
-                  <strong>API Documentation</strong>
-                  <small>OpenAPI Spec</small>
-                </div>
-              </a>
-              <a
-                href="http://localhost:9001"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="monitor-link"
-              >
-                <span className="icon">🪣</span>
-                <div>
-                  <strong>MinIO Console</strong>
-                  <small>S3 Storage</small>
-                </div>
-              </a>
+              {externalLinks.map((link) => (
+                <a
+                  key={link.url}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="monitor-link"
+                >
+                  <span className="icon">{link.icon}</span>
+                  <div>
+                    <strong>{link.title}</strong>
+                    <small>{link.subtitle}</small>
+                  </div>
+                </a>
+              ))}
             </div>
           </div>
         </section>

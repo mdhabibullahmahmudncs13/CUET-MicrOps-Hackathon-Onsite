@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import * as Sentry from "@sentry/react";
 
 interface DownloadJobListProps {
@@ -21,21 +21,26 @@ export default function DownloadJobList({ apiUrl }: DownloadJobListProps) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const checkFileAvailability = async () => {
+  const checkFileAvailability = useCallback(async () => {
     if (!fileId) return;
 
     setLoading(true);
     setMessage("");
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
       const response = await fetch(`${apiUrl}/v1/download/check`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ file_id: parseInt(fileId) }),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
       const data = await response.json();
 
       if (response.ok) {
@@ -51,29 +56,39 @@ export default function DownloadJobList({ apiUrl }: DownloadJobListProps) {
         );
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Unknown error";
-      setMessage(`❌ Error: ${errorMessage}`);
+      if (err instanceof Error && err.name === "AbortError") {
+        setMessage("❌ Error: Request timeout");
+      } else {
+        const errorMessage =
+          err instanceof Error ? err.message : "Unknown error";
+        setMessage(`❌ Error: ${errorMessage}`);
+      }
       Sentry.captureException(err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiUrl, fileId]);
 
-  const initiateDownload = async () => {
+  const initiateDownload = useCallback(async () => {
     if (!fileId) return;
 
     setLoading(true);
     setMessage("");
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
       const response = await fetch(`${apiUrl}/v1/download/initiate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ file_ids: [parseInt(fileId)] }),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
       const data = await response.json();
 
       if (response.ok) {
@@ -92,13 +107,18 @@ export default function DownloadJobList({ apiUrl }: DownloadJobListProps) {
         );
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Unknown error";
-      setMessage(`❌ Error: ${errorMessage}`);
+      if (err instanceof Error && err.name === "AbortError") {
+        setMessage("❌ Error: Request timeout");
+      } else {
+        const errorMessage =
+          err instanceof Error ? err.message : "Unknown error";
+        setMessage(`❌ Error: ${errorMessage}`);
+      }
       Sentry.captureException(err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiUrl, fileId]);
 
   const testSentryError = async () => {
     setLoading(true);

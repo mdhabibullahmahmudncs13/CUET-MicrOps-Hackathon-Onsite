@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   AreaChart,
   Area,
@@ -24,18 +24,27 @@ export default function PerformanceMetrics({
   apiUrl,
 }: PerformanceMetricsProps) {
   const [metrics, setMetrics] = useState<MetricDataPoint[]>([]);
-  const [avgResponseTime, setAvgResponseTime] = useState(0);
-  const [successRate, setSuccessRate] = useState(100);
 
-  const measurePerformance = async () => {
+  const measurePerformance = useCallback(async () => {
     const startTime = performance.now();
     try {
-      const response = await fetch(`${apiUrl}/health`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      const response = await fetch(`${apiUrl}/health`, {
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
       const endTime = performance.now();
       const responseTime = Math.round(endTime - startTime);
 
       const newDataPoint: MetricDataPoint = {
-        time: new Date().toLocaleTimeString(),
+        time: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }),
         responseTime,
         success: response.ok,
       };
@@ -45,34 +54,40 @@ export default function PerformanceMetrics({
         // Keep only last 20 data points
         return updated.slice(-20);
       });
-
-      // Calculate averages
-      const recentMetrics = [...metrics, newDataPoint].slice(-20);
-      const avgTime = Math.round(
-        recentMetrics.reduce((sum, m) => sum + m.responseTime, 0) /
-          recentMetrics.length,
-      );
-      const successCount = recentMetrics.filter((m) => m.success).length;
-      const rate = Math.round((successCount / recentMetrics.length) * 100);
-
-      setAvgResponseTime(avgTime);
-      setSuccessRate(rate);
     } catch (err) {
       Sentry.captureException(err);
       const newDataPoint: MetricDataPoint = {
-        time: new Date().toLocaleTimeString(),
+        time: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }),
         responseTime: 0,
         success: false,
       };
       setMetrics((prev) => [...prev, newDataPoint].slice(-20));
     }
-  };
+  }, [apiUrl]);
 
   useEffect(() => {
     measurePerformance();
-    const interval = setInterval(measurePerformance, 3000); // Measure every 3 seconds
+    const interval = setInterval(measurePerformance, 5000); // Measure every 5 seconds (reduced frequency)
     return () => clearInterval(interval);
-  }, [apiUrl]);
+  }, [measurePerformance]);
+
+  const stats = useMemo(() => {
+    if (metrics.length === 0) {
+      return { avgResponseTime: 0, successRate: 100 };
+    }
+
+    const avgTime = Math.round(
+      metrics.reduce((sum, m) => sum + m.responseTime, 0) / metrics.length,
+    );
+    const successCount = metrics.filter((m) => m.success).length;
+    const rate = Math.round((successCount / metrics.length) * 100);
+
+    return { avgResponseTime: avgTime, successRate: rate };
+  }, [metrics]);
 
   return (
     <div className="card performance-metrics">
@@ -80,11 +95,11 @@ export default function PerformanceMetrics({
 
       <div className="metrics-summary">
         <div className="metric-box">
-          <div className="metric-value">{avgResponseTime}ms</div>
+          <div className="metric-value">{stats.avgResponseTime}ms</div>
           <div className="metric-label">Avg Response Time</div>
         </div>
         <div className="metric-box">
-          <div className="metric-value">{successRate}%</div>
+          <div className="metric-value">{stats.successRate}%</div>
           <div className="metric-label">Success Rate</div>
         </div>
         <div className="metric-box">
